@@ -11,7 +11,7 @@ use crate::Point;
 
 
 /// 画初始画布
-pub fn draw_init_canvas(
+pub fn draw_empty_canvas(
     canvas_width: u32, 
     canvas_height: u32,
     bg_color: Rgba<u8>,

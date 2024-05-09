@@ -1,8 +1,17 @@
 mod process;
 
+use enum_dispatch::enum_dispatch;
 use anyhow::Result;
-pub use process::{generate_canvas_shapes};
-// pub use image_process::filter_triangles_with_image;
+pub use process::*;
+
+
+#[allow(async_fn_in_trait)]
+#[enum_dispatch]
+pub trait CmdExecutor {
+    async fn execute(self) -> anyhow::Result<()>;
+}
+
+
 
 
 // 画布生成

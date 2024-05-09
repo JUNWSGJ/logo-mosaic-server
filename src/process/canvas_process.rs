@@ -10,7 +10,6 @@ pub fn generate_canvas_shapes(options: FillShapeOptions, canvas_width: u32, canv
         }
     }
 
-
 }
 
 
