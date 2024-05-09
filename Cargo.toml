@@ -1,0 +1,21 @@
+[package]
+name = "logo-process"
+version = "0.1.0"
+edition = "2021"
+authors = ["Julian Ge<juliange@knx.com"]
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+anyhow = "1.0.83"
+axum = {version = "0.7.5", features = ["query", "http2", "tracing"]}
+clap = { version = "4.5.4", features = ["derive"] }
+image = "0.25.1"
+imageproc = "0.24.0"
+num-traits = "0.2.19"
+serde = { version = "1.0.198", features = ["derive"] }
+serde_json = "1.0.116"
+tokio = { version = "1.37.0", features = ["rt", "rt-multi-thread", "macros", "net", "fs"] }
+tower-http = {version="0.5.2", features = ["compression-full", "cors", "trace", "fs"]}
+tracing = "0.1.40"
+tracing-subscriber = { version = "0.3.18", features = ["env-filter"] }
