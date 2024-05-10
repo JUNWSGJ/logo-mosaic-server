@@ -3,7 +3,7 @@ use anyhow::Result;
 
 
 
-pub fn generate_canvas_shapes(options: FillShapeOptions, canvas_width: u32, canvas_height: u32) -> Result<Vec<Vec<Point>>> {
+pub fn generate_canvas_shapes(canvas_width: u32, canvas_height: u32, options: FillShapeOptions) -> Result<Vec<Vec<Point>>> {
     match options {
         FillShapeOptions::Triangle(w, h) => {
             get_all_triangles_of_canvas(canvas_width, canvas_height, w, h)
@@ -33,7 +33,7 @@ fn get_all_triangles_of_canvas(
         while x + triangle_width <= canvas_width {
             // 计算三角形三个顶点坐标
             let points = get_down_triangle_points(x, y, triangle_width, triangle_height);
-            println!("绘制倒三角形, 三点坐标: {:?}", &points);
+            // println!("绘制倒三角形, 三点坐标: {:?}", &points);
             triangle_points.push(points.to_vec());
             x = x + triangle_width;
         }
@@ -43,7 +43,7 @@ fn get_all_triangles_of_canvas(
         let y = (row + 1) * triangle_height;
         while x + triangle_width <= canvas_width {
             let points = get_up_triangle_points(x, y, triangle_width, triangle_height);
-            println!("绘制正三角形, 三点坐标: {:?}", &points);
+            // println!("绘制正三角形, 三点坐标: {:?}", &points);
             triangle_points.push(points.to_vec());
             x = x + triangle_width;
         }

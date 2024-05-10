@@ -1,15 +1,12 @@
 use anyhow::Result;
 use axum::{extract::State, http::StatusCode, response::Redirect, routing::{get, get_service}, Router};
+use logo_process::{api_routes, AppState};
 // use axum_extra::
 use tower_http::services::ServeDir;
-
 use std::{net::SocketAddr,sync::Arc};
 use tracing::info;
 
-#[derive(Debug)]
-struct AppState {
-    
-}
+
 
 #[tokio::main]
 pub async fn main() -> Result<()> {
@@ -24,7 +21,7 @@ pub async fn main() -> Result<()> {
     );
 
     let router = axum::Router::new()
-        .route("/api/auth", get(|| async { "API: /auth" }))
+        .nest("/api", api_routes())
         .fallback( static_service)
         .with_state(app_state);
 
@@ -32,6 +29,5 @@ pub async fn main() -> Result<()> {
     axum::serve(listener, router).await?;
     Ok(())
 }
-
 
 

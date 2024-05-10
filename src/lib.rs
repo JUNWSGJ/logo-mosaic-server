@@ -1,18 +1,19 @@
 mod process;
+mod web;
 
-use enum_dispatch::enum_dispatch;
 use anyhow::Result;
 use image::Rgba;
+use serde::{Deserialize, Serialize};
 use std::str::FromStr;
 pub use process::*;
+pub use web::*;
 
 
-#[allow(async_fn_in_trait)]
-#[enum_dispatch]
-pub trait CmdExecutor {
-    async fn execute(self) -> anyhow::Result<()>;
+
+#[derive(Debug)]
+pub struct AppState {
+    
 }
-
 
 
 
@@ -24,6 +25,7 @@ pub trait CanvasGenerator{
 
 
 /// 画布填充选项
+#[derive(Debug, Clone, Copy, Serialize, Deserialize)]
 pub enum FillShapeOptions {
     // 三角形（宽，高）
     Triangle(u32, u32),
@@ -31,7 +33,7 @@ pub enum FillShapeOptions {
     // Rectangle(u32, u32),
 }
 
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, Serialize, Deserialize)]
 pub struct Point {
     pub x: u32,
     pub y: u32,

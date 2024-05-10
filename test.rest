@@ -1,0 +1,10 @@
+### 给定宽高及填充图形信息（形状及尺寸）计算画布数据
+POST http://localhost:8001/api/canvas/calculate_empty_canvas_data
+Content-Type: application/json
+
+{
+    "canvas_width": 1000,
+    "canvas_height": 800,
+    "fill_shape_type": "triangle",
+    "fill_shape_size": [50, 40]
+}
