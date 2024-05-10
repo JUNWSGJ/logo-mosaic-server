@@ -1,5 +1,4 @@
 use anyhow::Result;
-use image::{GenericImage, RgbImage};
 
 fn main() -> Result<()> {
     // 加载图片并转换为RgbImage

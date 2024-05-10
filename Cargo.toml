@@ -22,6 +22,11 @@ tower-http = {version="0.5.2", features = ["compression-full", "cors", "trace", 
 tracing = "0.1.40"
 tracing-subscriber = { version = "0.3.18", features = ["env-filter"] }
 
+
+[[example]]
+name = "demo1"
+path = "examples/demo1.rs"
+
 [[example]]
 name = "demo2"
 path = "examples/demo2.rs"
