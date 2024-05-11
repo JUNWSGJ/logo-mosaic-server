@@ -10,18 +10,18 @@ pub use web::*;
 
 
 
-#[derive(Debug)]
-pub struct AppState {
-    
+
+#[derive(Debug, Clone, Copy, Serialize, Deserialize)]
+pub struct Point {
+    pub x: u32,
+    pub y: u32,
 }
 
-
-
-// 画布生成
-pub trait CanvasGenerator{
-    fn generate(options: FillShapeOptions, width: u32, height: u32) -> Result<Vec<Vec<Point>>>;
+impl Point {
+    pub fn new(x: u32, y: u32) -> Self {
+        Self { x, y }
+    }
 }
-
 
 
 /// 画布填充选项
@@ -33,38 +33,22 @@ pub enum FillShapeOptions {
     // Rectangle(u32, u32),
 }
 
-#[derive(Debug, Clone, Copy, Serialize, Deserialize)]
-pub struct Point {
-    pub x: u32,
-    pub y: u32,
+pub enum ShapePickStrategy{
+
+    AvgColorCompare(AvgColorCompareParam)
+
 }
 
-#[derive(Debug, Clone, Copy)]
-pub struct TrianglePoints([Point; 3]);
+pub struct AvgColorCompareParam{
+    
+    // 目标颜色
+    pub target: (u32, u32, u32),
 
-#[derive(Debug, Clone, Copy)]
-pub struct RectanglePoints([Point; 4]);
-
-
-#[derive(Debug, Clone, Copy)]
-pub enum ShapePoints{
-    Triangle(TrianglePoints),
-    Rectangle(RectanglePoints),
+    // 差值范围 [0, 1]
+    pub distance_range: (f32, f32),
+   
 }
 
-
-#[derive(Debug, Clone)]
-pub struct ShapeData {
-    pub seq: String,
-    pub points: ShapePoints,
-}
-
-impl TrianglePoints {
-    // 添加一个公共方法来遍历点
-    pub fn iter(&self) -> impl Iterator<Item = &Point> {
-        self.0.iter()
-    }
-}
 
 
 pub struct Color(pub Rgba<u8>);

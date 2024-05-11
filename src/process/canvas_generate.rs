@@ -1,19 +1,8 @@
-use crate::{FillShapeOptions, Point};
+use crate::Point;
 use anyhow::Result;
 
 
-
-pub fn generate_canvas_shapes(canvas_width: u32, canvas_height: u32, options: FillShapeOptions) -> Result<Vec<Vec<Point>>> {
-    match options {
-        FillShapeOptions::Triangle(w, h) => {
-            get_all_triangles_of_canvas(canvas_width, canvas_height, w, h)
-        }
-    }
-
-}
-
-
-fn get_all_triangles_of_canvas(
+pub fn get_all_triangles_of_canvas(
     canvas_width: u32,
     canvas_height: u32,
     triangle_width: u32,

@@ -25,7 +25,7 @@ fn main() -> Result<()> {
     let triangle_height = 40;
 
     let fill_options = FillShapeOptions::Triangle(triangle_width, triangle_height);
-    let polygons = generate_canvas_shapes(fill_options, canvas_width, canvas_height)?;
+    let polygons = generate_canvas_shapes( canvas_width, canvas_height, fill_options)?;
 
     draw_empty_canvas(canvas_width, canvas_height, bg_color, polygon_color, polygon_board_color, polygons, "canvas.png".into())?;
     Ok(())

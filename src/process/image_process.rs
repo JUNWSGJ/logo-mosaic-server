@@ -15,8 +15,8 @@ pub fn draw_empty_canvas(
     canvas_width: u32, 
     canvas_height: u32,
     bg_color: Rgba<u8>,
-    polyon_color: Rgba<u8>,
-    polyon_board_color: Rgba<u8>,
+    polygon_color: Rgba<u8>,
+    polygon_board_color: Rgba<u8>,
     polygons: Vec<Vec<Point>>,
     path: PathBuf,
 ) -> Result<()> {
@@ -40,8 +40,8 @@ pub fn draw_empty_canvas(
                 y: point.y as i32,
             });
         }
-        println!("正在绘制多边形：{:?}", polygon);
-        draw_polygon_mut(&mut img, &points, polyon_color);
+        // println!("正在绘制多边形：{:?}", polygon);
+        draw_polygon_mut(&mut img, &points, polygon_color);
 
         // 画多边形的边框
         let mut points: Vec<imageproc::point::Point<f32>> = Vec::with_capacity(polygon.len());
@@ -51,7 +51,7 @@ pub fn draw_empty_canvas(
                 y: point.y as f32,
             });
         }
-        draw_hollow_polygon_mut(&mut img, &points, polyon_board_color);
+        draw_hollow_polygon_mut(&mut img, &points, polygon_board_color);
     }
 
     // 保存图像

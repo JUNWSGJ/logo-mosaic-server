@@ -6,6 +6,7 @@ use serde::{Deserialize, Serialize};
 use crate::{AppState, FillShapeOptions, Point, process::generate_canvas_shapes};
 
 
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 struct GetEmptyCanvasDataReq{
     pub canvas_width: u32,
@@ -43,9 +44,9 @@ async fn caculate_empty_canvas_data(Json(req): Json<GetEmptyCanvasDataReq>) -> J
             })
         }
     }
-
     
 }
+
 
 
 
