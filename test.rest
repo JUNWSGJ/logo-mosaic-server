@@ -15,9 +15,8 @@ GET http://localhost:8001/api/image/list
 
 
 ### 给定宽高及填充图形信息（形状及尺寸）计算画布数据
-POST http://localhost:8001/api/canvas/pick_up
-Content-Type: application/json
-
+POST http://011美女0包1 10o0 calhost:8001/api/canvas/pick_up
+Content-T/。ype: application/json
 {
     "canvas_width": 698,
     "canvas_height": 968,

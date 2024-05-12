@@ -18,7 +18,7 @@ fn main() -> Result<()>{
     });
     let picked_shapes = pick_shapes_from_canvas(canvas_shapes, "images/logo1.png", pick_strategy)?;
 
-    println!(">>>>>>picked_shapes: {:?}", picked_shapes.len());
+    println!(">>>>>>picked grids: {:?}", picked_shapes.len());
 
 
     draw_empty_canvas(canvas_width, canvas_height, bg_color, polygon_color, polygon_board_color, picked_shapes, "output/logo1_canvas3.png".into())?;

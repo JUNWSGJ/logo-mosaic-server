@@ -1,8 +1,9 @@
 use std::sync::Arc;
 use axum::{extract::State, routing::{get, post}, Json, Router};
 use serde::{Deserialize, Serialize};
+use serde_json::Map;
 
-use crate::AppState;
+use crate::{AppState, ImageInfo, Point};
 
 
 
@@ -30,24 +31,21 @@ struct LogoImageInfo{
 // logo图片列表查询
 #[derive(Debug, Clone, Serialize, Deserialize)]
 struct LogoImageListReply{
-    pub logo_images: Vec<LogoImageInfo>
+    pub logo_images: Vec<ImageInfo>
 }
 
 
 
 
 /// 查询所有图片信息
-async fn image_list_handler() -> Json<LogoImageListReply> {
+async fn image_list_handler(State(app_state): State<Arc<AppState>>) -> Json<LogoImageListReply> {
+    let mut images = Vec::new();
+    app_state.image_map.iter().for_each(|item| {
+        images.push(item.value().clone());
+    });
+    
     Json(LogoImageListReply{
-        logo_images: vec![
-            LogoImageInfo{
-                id: "1".into(),
-                name: "logo1".into(),
-                width: 698,
-                height: 968,
-                url: "images/logo1.png".into()
-            },
-        ]
+        logo_images: images
     })
 }
 
@@ -57,30 +55,66 @@ struct MosaicGridsConvertReq{
     pub image_id: String,
     pub grid_shape: String,
     pub grid_size: Vec<u32>,
-    pub convert_strategy: String,
-    pub strategy_params: Vec<u32>,
+    pub convert_strategy: MosaicGridsConvertStrategy,
+
 
 }
 
+#[derive(Debug, Clone, Serialize, Deserialize)]
 struct MosaicGridsConvertStrategy{
+
     pub name: String,
+    pub options: Vec<f32>,
 
 }
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+struct MosaicGridsConvertReply {
+    // 画布宽度
+    pub canvas_width: u32,
+    // 画布高度
+    pub canvas_height: u32,
+    // 网格信息
+    pub grids: Vec<MosaicGrid>,
+
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+struct MosaicGrid {
+
+    // 序号
+    pub seq: String,
+    // 点坐标
+    pub points: Vec<Point>,
+    // 颜色
+    pub color: (u8, u8, u8),
+    // 是否选中
+    pub selected: bool,
+
+}
+
 
 
 
 
 /// 给定图片和参数，给出多边形马赛克填充的canvas数据
-async fn convert_Into_mosaic_grids() -> Json<LogoImageListReply> {
-    Json(LogoImageListReply{
-        logo_images: vec![
-            LogoImageInfo{
-                id: "1".into(),
-                name: "logo1".into(),
-                width: 698,
-                height: 968,
-                url: "images/logo1.png".into()
-            },
+async fn convert_to_mosaic_grids(Json(req): Json<MosaicGridsConvertReq>) -> Json<MosaicGridsConvertReply> {
+
+
+    Json(MosaicGridsConvertReply{
+        canvas_width: 968,
+        canvas_height: 698,
+        grids: vec![
+            MosaicGrid{
+                seq: "1".into(),
+                points: vec![
+                    Point{x: 0, y: 0},
+                    Point{x: 10, y: 0},
+                    Point{x: 10, y: 10},
+                ],
+                color: (255, 255, 255),
+                selected: true,
+            }
         ]
     })
 }
@@ -90,4 +124,5 @@ async fn convert_Into_mosaic_grids() -> Json<LogoImageListReply> {
 pub fn image_routes() -> Router<Arc<AppState>> {
     Router::new()
         .route("/list", get(image_list_handler))
+        .route("/convert_to_mosaic_grids", post(convert_to_mosaic_grids))
 }

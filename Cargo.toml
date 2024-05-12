@@ -10,6 +10,7 @@ authors = ["Julian Ge<juliange@knx.com"]
 anyhow = "1.0.83"
 axum = {version = "0.7.5", features = ["query", "http2", "tracing"]}
 clap = { version = "4.5.4", features = ["derive"] }
+dashmap = "5.5.3"
 enum_dispatch = "0.3.13"
 image = "0.25.1"
 imageproc = "0.24.0"

@@ -2,12 +2,24 @@ mod canvas_generate;
 mod canvas_shape_pick;
 mod image_process;
 
-pub use image_process::draw_empty_canvas;
+pub use image_process::{draw_empty_canvas, load_all_image_info};
 
 use anyhow::Result;
+use serde::{Deserialize, Serialize};
 use crate::{FillShapeOptions, Point, ShapePickStrategy};
 use canvas_generate::get_all_triangles_of_canvas;
 use canvas_shape_pick::pick_triangles_from_canvas;
+
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct ImageInfo {
+    pub id: String,
+    pub width: u32,
+    pub height: u32,
+    pub name: String,
+    pub path: String,
+}
+
 
 
 /// 指定画布的宽高，以及填充画布的图形信息（形状及尺寸）生成画布上的所有图形的坐标

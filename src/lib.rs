@@ -35,7 +35,9 @@ pub enum FillShapeOptions {
 
 pub enum ShapePickStrategy{
 
-    AvgColorCompare(AvgColorCompareParam)
+    // 区域平均色值比较
+    AvgColorCompare(AvgColorCompareParam),
+    // 剔除背景色后，根据
 
 }
 

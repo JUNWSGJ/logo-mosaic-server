@@ -37,7 +37,7 @@ fn pick_triangles_by_avg_color(img: &RgbImage, triangles: &Vec<Vec<Point>>, para
         // 根据平均色值，判断是否需要保留
         let distance = calculate_color_diff(avg_color, target_color);
         let (min_value, max_value) = param.distance_range;
-        println!(">>>>>>计算三角形平均色值, 平均色值:{:?}, 差值:{:?}, 三角形点坐标: {:?},", avg_color, distance, points);
+        // println!(">>>>>>计算三角形平均色值, 平均色值:{:?}, 差值:{:?}, 三角形点坐标: {:?},", avg_color, distance, points);
         if distance >= min_value && distance <= max_value {
             picked_triangles.push(points.clone());
         }
