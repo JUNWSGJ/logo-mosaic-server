@@ -2,7 +2,7 @@
 
 use std::str::FromStr;
 use anyhow::Result;
-use logo_process::{generate_canvas_shapes,FillShapeOptions, draw_empty_canvas, Color};
+use logo_process::{generate_canvas_grids,GridFillOptions, draw_empty_canvas, Color};
 
 
 
@@ -24,8 +24,8 @@ fn main() -> Result<()> {
     let triangle_width = 50;
     let triangle_height = 40;
 
-    let fill_options = FillShapeOptions::Triangle(triangle_width, triangle_height);
-    let polygons = generate_canvas_shapes( canvas_width, canvas_height, fill_options)?;
+    let fill_options = GridFillOptions::Triangle(triangle_width, triangle_height);
+    let polygons = generate_canvas_grids( canvas_width, canvas_height, fill_options)?;
 
     draw_empty_canvas(canvas_width, canvas_height, bg_color, polygon_color, polygon_board_color, polygons, "canvas.png".into())?;
     Ok(())

@@ -1,9 +1,9 @@
 use std::sync::Arc;
 
-use axum::{extract::State, routing::post, Json, Router};
+use axum::{routing::post, Json, Router};
 use serde::{Deserialize, Serialize};
 
-use crate::{AppState, FillShapeOptions, Point, process::generate_canvas_shapes};
+use crate::{AppState, GridFillOptions, Point, process::generate_canvas_grids};
 
 
 
@@ -28,8 +28,8 @@ async fn caculate_empty_canvas_data(Json(req): Json<GetEmptyCanvasDataReq>) -> J
     match req.fill_shape_type.as_str() {
         "triangle" => {
             let fill_shape_size = req.fill_shape_size;
-            let fill_shape_options = FillShapeOptions::Triangle(fill_shape_size[0], fill_shape_size[1]);
-            let fill_shapes = generate_canvas_shapes(req.canvas_width, req.canvas_height, fill_shape_options).unwrap();
+            let fill_shape_options = GridFillOptions::Triangle(fill_shape_size[0], fill_shape_size[1]);
+            let fill_shapes = generate_canvas_grids(req.canvas_width, req.canvas_height, fill_shape_options).unwrap();
             GetEmptyCanvasDataReply{
                 canvas_width: req.canvas_width,
                 canvas_height: req.canvas_height,

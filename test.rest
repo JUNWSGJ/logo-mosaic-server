@@ -11,15 +11,18 @@ Content-Type: application/json
 
 
 ### 获取图片列表
-GET http://localhost:8001/api/image/list
+GET http://10.55.16.25:8002/api/image/list
 
 
 ### 给定宽高及填充图形信息（形状及尺寸）计算画布数据
-POST http://011美女0包1 10o0 calhost:8001/api/canvas/pick_up
-Content-T/。ype: application/json
+POST http://10.55.16.25:8002/api/image/convert_to_mosaic_grids
+Content-Type: application/json
+
 {
-    "canvas_width": 698,
-    "canvas_height": 968,
-    "fill_shape_type": "triangle",
-    "fill_shape_size": [50, 40]
+    "image_id": "1",
+    "grid_shape": "triangle",
+    "grid_size": [50, 40],
+    "grid_pick_strategy": "eliminate_bg_color",
+    "grid_pick_options": ["0.3"]
 }
+

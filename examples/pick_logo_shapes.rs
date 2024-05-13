@@ -1,6 +1,6 @@
 use anyhow::Result;
 use image::{RgbImage, ImageBuffer, Rgb};
-use logo_process::{generate_canvas_shapes, FillShapeOptions, Point};
+use logo_process::{generate_canvas_grids, GridFillOptions, Point};
 
 fn main() -> Result<()> {
     // 加载图片并转换为RgbImage
@@ -12,8 +12,8 @@ fn main() -> Result<()> {
     let triangle_width = 50;
     let triangle_height = 40;
 
-    let fill_options = FillShapeOptions::Triangle(triangle_width, triangle_height);
-    let polygons = generate_canvas_shapes( canvas_width, canvas_height, fill_options)?;
+    let fill_options = GridFillOptions::Triangle(triangle_width, triangle_height);
+    let polygons = generate_canvas_grids( canvas_width, canvas_height, fill_options)?;
     
 
     // 定义三角形顶点坐标

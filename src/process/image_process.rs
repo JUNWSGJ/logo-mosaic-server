@@ -34,6 +34,7 @@ pub fn load_all_image_info(logo_image_dir_path: &str) -> Result<DashMap<String, 
                             height: img.height(),
                             path: dir_path.join(image_name.clone()).to_str().unwrap().to_string(),
                             name: image_name,
+                            bg_color: (255, 255, 255),
                         });
                     },
                     Err(e) => {

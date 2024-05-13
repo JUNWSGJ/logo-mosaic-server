@@ -1,6 +1,7 @@
 use anyhow::Result;
 use axum::{ http::StatusCode, routing::get_service};
-use logo_process::{api_routes, AppState, load_all_image_info};
+use dashmap::DashMap;
+use logo_process::{api_routes, AppState, ImageInfo};
 use tower_http::services::ServeDir;
 use std::{net::SocketAddr, sync::Arc};
 use tracing::info;
@@ -15,8 +16,7 @@ pub async fn main() -> Result<()> {
 
     let logo_image_dir_path= "images";
     // 加载logo图片
-    let image_map =  load_all_image_info(logo_image_dir_path)?;
- 
+    let image_map =  mock_all_images();
 
     let app_state = Arc::new(AppState { 
         logo_image_dir_path,
@@ -47,3 +47,15 @@ pub async fn main() -> Result<()> {
 
 
 
+fn mock_all_images() -> DashMap<String, ImageInfo>{
+    let image_map = dashmap::DashMap::new();
+    image_map.insert("1".to_string(), ImageInfo{
+        id: "1".to_string(),
+        width: 968,
+        height: 698,
+        name: "logo1.png".to_string(),
+        path: "images/logo1.png".to_string(),
+        bg_color: (255, 255, 255)
+    },);
+    image_map
+}

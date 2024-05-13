@@ -1,6 +1,6 @@
 use std::str::FromStr;
 
-use logo_process::{draw_empty_canvas, generate_canvas_shapes, pick_shapes_from_canvas, AvgColorCompareParam, Color, FillShapeOptions, ShapePickStrategy};
+use logo_process::{draw_empty_canvas, generate_canvas_grids, pick_shapes_from_canvas, AvgColorCompareParam, Color, GridFillOptions, GridPickStrategy};
 use anyhow::Result;
 
 fn main() -> Result<()>{
@@ -10,9 +10,9 @@ fn main() -> Result<()>{
     let polygon_color = Color::from_str("#9099A2")?.0;
     let polygon_board_color = Color::from_str("#ffffff")?.0;
 
-    let canvas_shapes = generate_canvas_shapes(canvas_width, canvas_height, FillShapeOptions::Triangle(20, 16))?;
+    let canvas_shapes = generate_canvas_grids(canvas_width, canvas_height, GridFillOptions::Triangle(20, 16))?;
 
-    let pick_strategy = ShapePickStrategy::AvgColorCompare(AvgColorCompareParam {
+    let pick_strategy = GridPickStrategy::AvgColorCompare(AvgColorCompareParam {
         target: (255, 255, 255),
         distance_range: (0.5, 1.0)
     });
