@@ -2,7 +2,7 @@ use std::sync::Arc;
 use axum::{extract::State, routing::{get, post}, Json, Router};
 use serde::{Deserialize, Serialize};
 use anyhow::Result;
-use tracing::info;
+use tracing::{debug, info};
 use crate::{generate_canvas_grids_by_image_path, ApiError, ApiResponse, AppState, AvgColorCompareParam, EliminateBgColorParam, GridFillOptions, GridPickStrategy, ImageInfo, Point, Value, GRID_EXT_SELECTED};
 
 
@@ -114,7 +114,6 @@ async fn convert_to_mosaic_grids(
     let fill_options = match req.grid_shape.as_str() {
         "triangle" => {
             let grid_size =  req.grid_size;
-
             GridFillOptions::Triangle(grid_size[0], grid_size[1])
 
         },
@@ -131,8 +130,6 @@ async fn convert_to_mosaic_grids(
     //     color: image_info.bg_color.clone(),
     //     min_ratio: 0.3,
     // });
-
-    
     let pick_strategy = GridPickStrategy::AvgColorCompare(AvgColorCompareParam{
         color: (255, 255, 255),
         min_distance: 0.3,
@@ -141,20 +138,21 @@ async fn convert_to_mosaic_grids(
 
     info!("pick_strategy: {:?}", pick_strategy);
 
-
     let grids = generate_canvas_grids_by_image_path(image_info.path.as_str(), fill_options, pick_strategy)
         .map_err(|e| ApiError::BizError("IMAGE_NOT_FOUND".to_string(), e.to_string()))?;
 
     let mut mosaic_grids = Vec::with_capacity(grids.len());
-    for grid in grids.into_iter(){
+    for grid in &grids{
+        debug!("grid seq: {:?}, ext: {:?}", grid.seq, grid.ext);
+
         let selected: bool = if let Some(Value::Bool(value)) = grid.ext.get(GRID_EXT_SELECTED) {
             *value
         } else {
             false  
         };
         let mosaic_grid = MosaicGrid{
-            seq: grid.seq,
-            points: grid.points,
+            seq: grid.seq.clone(),
+            points: grid.points.clone(),
             shape: grid.shape.into(),
             selected,
         };

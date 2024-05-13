@@ -91,17 +91,15 @@ fn pick_grids_by_strategy(
                 // 计算差值
                 let distance = calculate_color_diff(avg_color, param.color);
                 grid.ext.insert(GRID_EXT_COLOR_DISTANCE.into(), Value::F32(distance));
-                if distance >= param.min_distance && distance <= param.max_distance {
-                    grid.ext.insert(GRID_EXT_SELECTED.into(), Value::Bool(true));
-                }
+                let selected = distance >= param.min_distance && distance <= param.max_distance;
+                grid.ext.insert(GRID_EXT_SELECTED.into(), Value::Bool(selected));
 
             },
             GridPickStrategy::EliminateBgColor(param) => {
                 let remaining_area_ratio = calc_remaining_area_ratio_in_grid(img, grid, param.color)?;
                 grid.ext.insert(GRID_EXT_REMAINING_AREA_RATIO.into(), Value::F32(remaining_area_ratio));
-                if remaining_area_ratio >= param.min_remaining_ratio {
-                    grid.ext.insert(GRID_EXT_SELECTED.into(), Value::Bool(true));
-                }
+                let selected =  remaining_area_ratio >= param.min_remaining_ratio;
+                grid.ext.insert(GRID_EXT_SELECTED.into(), Value::Bool(selected));
             },
         }
     }
