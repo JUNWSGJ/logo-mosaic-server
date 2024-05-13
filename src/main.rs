@@ -4,7 +4,7 @@ use dashmap::DashMap;
 use logo_process::{api_routes, AppState, ImageInfo};
 use tower_http::services::ServeDir;
 use std::{net::SocketAddr, sync::Arc};
-use tracing::info;
+use tracing::{debug, info};
 
 
 
@@ -12,6 +12,7 @@ use tracing::info;
 pub async fn main() -> Result<()> {
     tracing_subscriber::fmt::init();
     let addr = SocketAddr::from(([0, 0, 0, 0], 8002));
+    debug!("debug log is enabled");
     info!("Serving on {}", addr);
 
     let logo_image_dir_path= "images";

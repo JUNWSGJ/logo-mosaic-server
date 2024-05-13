@@ -97,6 +97,8 @@ fn generate_enmty_canvas_grids(canvas_width: u32, canvas_height: u32, options: G
 
 /// 填充格子的选取信息
 fn fill_pick_info_for_grids(img: &RgbaImage, grids: &mut Vec<Grid>, pick_strategy: GridPickStrategy) -> Result<()> {
+
+    debug!("fill_pick_info_for_grids, grids size: {:?}, pick_strategy: {:?}", grids.len(), pick_strategy);
     match pick_strategy {
         // 如果根据平均颜色比较的策略选取格子，则添加格子的平均颜色信息
         GridPickStrategy::AvgColorCompare(_) => {

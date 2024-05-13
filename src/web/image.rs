@@ -3,7 +3,7 @@ use axum::{extract::State, routing::{get, post}, Json, Router};
 use serde::{Deserialize, Serialize};
 use anyhow::Result;
 use tracing::info;
-use crate::{generate_canvas_grids_from_logo_image, ApiError, ApiResponse, AppState, EliminateBgColorParam, GridFillOptions, GridPickStrategy, ImageInfo, Point, Value, GRID_EXT_SELECTED};
+use crate::{generate_canvas_grids_from_logo_image, ApiError, ApiResponse, AppState, AvgColorCompareParam, EliminateBgColorParam, GridFillOptions, GridPickStrategy, ImageInfo, Point, Value, GRID_EXT_SELECTED};
 
 
 /// 将logo图片转换为canvas上马赛克的形状
@@ -128,17 +128,17 @@ async fn convert_to_mosaic_grids(
     info!("fill_options: {:?}", fill_options);
 
 
-    let pick_strategy = GridPickStrategy::EliminateBgColor(EliminateBgColorParam{
-        color: image_info.bg_color.clone(),
-        min_ratio: 0.3,
-    });
+    // let pick_strategy = GridPickStrategy::EliminateBgColor(EliminateBgColorParam{
+    //     color: image_info.bg_color.clone(),
+    //     min_ratio: 0.3,
+    // });
 
     
-    // let pick_strategy = GridPickStrategy::AvgColorCompare(AvgColorCompareParam{
-    //     color: (255, 255, 255),
-    //     min_distance: 0.3,
-    //     max_distance: 1.0,
-    // });
+    let pick_strategy = GridPickStrategy::AvgColorCompare(AvgColorCompareParam{
+        color: (255, 255, 255),
+        min_distance: 0.3,
+        max_distance: 1.0,
+    });
 
     info!("pick_strategy: {:?}", pick_strategy);
 

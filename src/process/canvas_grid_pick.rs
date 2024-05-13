@@ -1,5 +1,6 @@
 use anyhow::Result;
 use image::RgbaImage;
+use tracing::debug;
 
 use crate::{Grid, GridShape, Point, Value, GRID_EXT_AVG_COLOR, GRID_EXT_REMAINING_AREA_RATIO};
 
@@ -33,8 +34,9 @@ pub fn fill_avg_color(img: &RgbaImage, grids: &mut Vec<Grid>) -> Result<()>{
                 ];
                 // 计算平均色值
                 
-                let (r, g, b) = calc_average_color_in_triangle(img, triangle);
-                grid.ext.insert(GRID_EXT_AVG_COLOR.into(), Value::Rgb((r, g, b)));
+                let color = calc_average_color_in_triangle(img, triangle);
+                grid.ext.insert(GRID_EXT_AVG_COLOR.into(), Value::Rgb(color));
+                debug!("fill_avg_color, grid_seq: {:?}, avg_color: {:?}", grid.seq, color);
             },
         }
     });
@@ -58,6 +60,7 @@ pub fn fill_remaining_area_ratio_after_eliminate_bg_color(img: &RgbaImage, bg_co
                 
                 let ratio = calc_remaining_area_ratio_in_triangle(img, bg_color, triangle);
                 grid.ext.insert(GRID_EXT_REMAINING_AREA_RATIO.into(), Value::F32(ratio));
+                debug!("fill_remaining_area_ratio_after_eliminate_bg_color, grid_seq: {:?}, ratio: {:?}", grid.seq, ratio);
             },
         }
     };
