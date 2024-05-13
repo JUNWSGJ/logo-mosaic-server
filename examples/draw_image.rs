@@ -1,4 +1,4 @@
-use image::{ImageBuffer, Rgb, Rgba};
+use image::{ImageBuffer, Rgba};
 use imageproc::{drawing::draw_polygon_mut, point::Point};
 
 fn main() {
