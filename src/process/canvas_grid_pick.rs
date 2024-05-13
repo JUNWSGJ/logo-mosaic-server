@@ -5,25 +5,32 @@ use tracing::debug;
 use crate::{Grid, GridShape, Point, Value, GRID_EXT_AVG_COLOR, GRID_EXT_REMAINING_AREA_RATIO};
 
 
-// // 填充格子信息，以供后续挑选
-// pub fn fill_pick_info(img: &RgbaImage, grids: &mut Vec<Grid>, pick_strategy: GridPickStrategy) -> Result<()>{
-//     match pick_strategy {
-//         GridPickStrategy::AvgColorCompare(_) => {
-//             fill_avg_color(img, grids)
-//         }
-//         GridPickStrategy::EliminateBgColor(param) => {
-//             fill_remaining_area_ratio_after_eliminate_bg_color(img, param.color, grids)
-//         }
-//     }
-// }
+
+pub fn calc_avg_color_of_grid(img: &RgbaImage,grid: &Grid) -> Result<(u8, u8, u8)>{
+    match grid.shape {
+        GridShape::Triangle => {
+            let points = &grid.points;
+            assert_eq!(points.len(), 3, "Each polygon should have 3 points.");
+            let triangle:[(u32, u32); 3] = [
+                (points[0].x, points[0].y),
+                (points[1].x, points[1].y),
+                (points[2].x, points[2].y),
+            ];
+            // 计算平均色值
+            let color = calc_average_color_in_triangle(img, triangle);
+            Ok(color)
+            // grid.ext.insert(GRID_EXT_AVG_COLOR.into(), Value::Rgb(color));
+            // debug!("fill_avg_color, grid_seq: {:?}, avg_color: {:?}", grid.seq, color);
+        },
+    }
+}
 
 
-
-/// 填充格子信息: 区域的平均色值
-pub fn fill_avg_color(img: &RgbaImage, grids: &mut Vec<Grid>) -> Result<()>{
-    grids.into_iter().for_each(|grid| {
-
-        match grid.shape {
+pub fn calc_remaining_area_ratio_in_grid(
+    img: &RgbaImage, 
+    grid: &Grid,
+    bg_color: (u8, u8, u8)) -> Result<f32>{
+    match grid.shape {
             GridShape::Triangle => {
                 let points = &grid.points;
                 assert_eq!(points.len(), 3, "Each polygon should have 3 points.");
@@ -32,40 +39,37 @@ pub fn fill_avg_color(img: &RgbaImage, grids: &mut Vec<Grid>) -> Result<()>{
                     (points[1].x, points[1].y),
                     (points[2].x, points[2].y),
                 ];
-                // 计算平均色值
-                
-                let color = calc_average_color_in_triangle(img, triangle);
-                grid.ext.insert(GRID_EXT_AVG_COLOR.into(), Value::Rgb(color));
-                debug!("fill_avg_color, grid_seq: {:?}, avg_color: {:?}", grid.seq, color);
+                // 计算剔除背景色后的剩余区域占比
+                calc_remaining_area_ratio_in_triangle(img, bg_color, triangle)
+                // grid.ext.insert(GRID_EXT_REMAINING_AREA_RATIO.into(), Value::F32(ratio));
+                // debug!("fill_remaining_area_ratio_after_eliminate_bg_color, grid_seq: {:?}, ratio: {:?}", grid.seq, ratio);
             },
-        }
-    });
-
-    Ok(())
+    }
+    
 }
 
 /// 填充格子信息: 剔除背景色后的剩余像素数量占比
-pub fn fill_remaining_area_ratio_after_eliminate_bg_color(img: &RgbaImage, bg_color: (u8, u8, u8), grids: &mut Vec<Grid>) -> Result<()>{
-    for grid in grids.iter_mut() {
-        match grid.shape {
-            GridShape::Triangle => {
-                let points = &grid.points;
-                assert_eq!(points.len(), 3, "Each polygon should have 3 points.");
-                let triangle:[(u32, u32); 3] = [
-                    (points[0].x, points[0].y),
-                    (points[1].x, points[1].y),
-                    (points[2].x, points[2].y),
-                ];
-                // 计算平均色值
+// pub fn fill_remaining_area_ratio_after_eliminate_bg_color(img: &RgbaImage, bg_color: (u8, u8, u8), grids: &mut Vec<Grid>) -> Result<()>{
+//     for grid in grids.iter_mut() {
+//         match grid.shape {
+//             GridShape::Triangle => {
+//                 let points = &grid.points;
+//                 assert_eq!(points.len(), 3, "Each polygon should have 3 points.");
+//                 let triangle:[(u32, u32); 3] = [
+//                     (points[0].x, points[0].y),
+//                     (points[1].x, points[1].y),
+//                     (points[2].x, points[2].y),
+//                 ];
+//                 // 计算平均色值
                 
-                let ratio = calc_remaining_area_ratio_in_triangle(img, bg_color, triangle);
-                grid.ext.insert(GRID_EXT_REMAINING_AREA_RATIO.into(), Value::F32(ratio));
-                debug!("fill_remaining_area_ratio_after_eliminate_bg_color, grid_seq: {:?}, ratio: {:?}", grid.seq, ratio);
-            },
-        }
-    };
-    Ok(())
-}
+//                 let ratio = calc_remaining_area_ratio_in_triangle(img, bg_color, triangle);
+//                 grid.ext.insert(GRID_EXT_REMAINING_AREA_RATIO.into(), Value::F32(ratio));
+//                 debug!("fill_remaining_area_ratio_after_eliminate_bg_color, grid_seq: {:?}, ratio: {:?}", grid.seq, ratio);
+//             },
+//         }
+//     };
+//     Ok(())
+// }
 
 
 
@@ -122,7 +126,7 @@ fn calc_average_color_in_triangle(img: &RgbaImage, triangle: [(u32, u32); 3]) ->
 
 
 /// 计算三角形区域剔除掉背景色后的剩余区域占比
-fn calc_remaining_area_ratio_in_triangle(img: &RgbaImage, bg_color: (u8, u8, u8), triangle: [(u32, u32); 3]) -> f32 {
+fn calc_remaining_area_ratio_in_triangle(img: &RgbaImage, bg_color: (u8, u8, u8), triangle: [(u32, u32); 3]) -> Result<f32> {
     // 计算三角形边界框，用于遍历
     let (min_x, min_y, max_x, max_y) = triangle.iter().fold(
         (std::u32::MAX, std::u32::MAX, 0, 0),
@@ -160,7 +164,7 @@ fn calc_remaining_area_ratio_in_triangle(img: &RgbaImage, bg_color: (u8, u8, u8)
         panic!("The triangle does not cover any pixels in the image.");
     }
 
-    remaining_count as f32 / total_pixel_count as f32
+    Ok(remaining_count as f32 / total_pixel_count as f32)
 
 }
 

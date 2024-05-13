@@ -9,6 +9,7 @@ pub use process::*;
 pub use web::*;
 
 pub const GRID_EXT_AVG_COLOR: &'static str = "avg_color";
+pub const GRID_EXT_COLOR_DISTANCE: &'static str = "color_distance";
 pub const GRID_EXT_REMAINING_AREA_RATIO: &'static str = "remaining_area_ratio";
 pub const GRID_EXT_REMOVED_BG_COLOR: &'static str = "eliminated_bg_color";
 pub const GRID_EXT_SELECTED: &'static str = "selected";
@@ -49,44 +50,6 @@ pub struct Grid {
     points: Vec<Point>,
     ext: HashMap<String, Value>,
 }
-
-
-
-impl Grid {
-    fn pick(&mut self, pick_strategy: &GridPickStrategy) -> Result<()>{
-        match pick_strategy {
-            GridPickStrategy::AvgColorCompare(param) => {
-                // 根据平均色值，判断是否需要保留
-                let avg_color_value = self.ext.get(GRID_EXT_AVG_COLOR).ok_or_else(|| anyhow::anyhow!("No average color in grid ext info"))?;
-                let avg_color = match avg_color_value {
-                    Value::Rgb(color) => *color,
-                    _ => return Err(anyhow::anyhow!("Invalid average color value")),
-                };
-
-                let distance = calculate_color_diff(avg_color, param.color);
-                if distance >= param.min_distance && distance <= param.max_distance {
-                    self.ext.insert(GRID_EXT_SELECTED.to_string(), Value::Bool(true));
-                }
-            
-            },
-            GridPickStrategy::EliminateBgColor(param) => {
-                let remaining_area_ratio = self.ext.get(GRID_EXT_REMAINING_AREA_RATIO).ok_or_else(|| anyhow::anyhow!("No remaining area ratio"))?;
-                let remaining_area_ratio = match remaining_area_ratio {
-                    Value::F32(ratio) => *ratio,
-                    _ => return Err(anyhow::anyhow!("Invalid remaining area ratio")),
-                };
-                if remaining_area_ratio >= param.min_ratio {
-                    self.ext.insert(GRID_EXT_SELECTED.to_string(), Value::Bool(true));
-                }
-            },
-        }
-
-        self.ext.insert(GRID_EXT_SELECTED.to_string(), Value::Bool(false));
-        Ok(())
-    }
-
-}
-
 
 
 
@@ -134,11 +97,10 @@ pub enum GridPickStrategy{
 
 #[derive(Debug, Clone, Copy, Serialize, Deserialize)]
 pub struct AvgColorCompareParam{
-    // 目标颜色
+    // 要比较的颜色
     pub color: (u8, u8, u8),
     pub min_distance: f32,
     pub max_distance: f32,
-   
 }
 
 
@@ -148,7 +110,7 @@ pub struct EliminateBgColorParam{
     // 要剔除的背景色
     pub color: (u8, u8, u8),
     // 剩余区域的最小占比
-    pub min_ratio: f32,
+    pub min_remaining_ratio: f32,
 }
 
 

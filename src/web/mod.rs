@@ -1,14 +1,14 @@
-mod canvas;
 mod image;
 mod activity;
 
 use std::sync::Arc;
 use axum::{http::StatusCode, response::{IntoResponse, Response}, Router};
-use canvas::canvas_routes;
 use dashmap::DashMap;
-use image::image_routes;
 use serde::Serialize;
 use thiserror::Error;
+
+use image::image_routes;
+use activity::activity_routes;
 use crate::ImageInfo;
 
 #[derive(Error, Debug)]
@@ -73,8 +73,6 @@ where
 
 
 
-
-
 #[derive(Debug)]
 pub struct AppState {
     /// logo图片存储路径
@@ -89,6 +87,6 @@ pub struct AppState {
 
 pub fn api_routes() -> Router<Arc<AppState>> {
     Router::new()
-        .nest("/canvas", canvas_routes())
         .nest("/image", image_routes())
+        .nest("/activity", activity_routes())
 }

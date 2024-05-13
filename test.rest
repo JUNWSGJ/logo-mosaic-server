@@ -14,7 +14,7 @@ Content-Type: application/json
 GET http://localhost:8002/api/image/list
 
 
-### 给定宽高及填充图形信息（形状及尺寸）计算画布数据
+### 选择logo图像，生成画布数据（格子选取策略：区域内去除背景色后剩余像素点占比>=0.3）
 POST http://localhost:8002/api/image/convert_to_mosaic_grids
 Content-Type: application/json
 
@@ -26,3 +26,15 @@ Content-Type: application/json
     "grid_pick_options": ["0.3"]
 }
 
+
+### 选择logo图像，生成画布数据（格子选取策略：区域平均色值和目标颜色的差值范围在[0.3, 1]间）
+POST http://localhost:8002/api/image/convert_to_mosaic_grids
+Content-Type: application/json
+
+{
+    "image_id": "1",
+    "grid_shape": "triangle",
+    "grid_size": [50, 40],
+    "grid_pick_strategy": "eliminate_bg_color",
+    "grid_pick_options": ["0.3"]
+}

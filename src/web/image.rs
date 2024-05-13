@@ -3,7 +3,7 @@ use axum::{extract::State, routing::{get, post}, Json, Router};
 use serde::{Deserialize, Serialize};
 use anyhow::Result;
 use tracing::info;
-use crate::{generate_canvas_grids_from_logo_image, ApiError, ApiResponse, AppState, AvgColorCompareParam, EliminateBgColorParam, GridFillOptions, GridPickStrategy, ImageInfo, Point, Value, GRID_EXT_SELECTED};
+use crate::{generate_canvas_grids_by_image_path, ApiError, ApiResponse, AppState, AvgColorCompareParam, EliminateBgColorParam, GridFillOptions, GridPickStrategy, ImageInfo, Point, Value, GRID_EXT_SELECTED};
 
 
 /// 将logo图片转换为canvas上马赛克的形状
@@ -83,7 +83,6 @@ struct MosaicGridsConvertReply {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 struct MosaicGrid {
-
     // 序号
     pub seq: String,
     // 点坐标
@@ -143,7 +142,7 @@ async fn convert_to_mosaic_grids(
     info!("pick_strategy: {:?}", pick_strategy);
 
 
-    let grids = generate_canvas_grids_from_logo_image(image_info.path.as_str(), fill_options, pick_strategy)
+    let grids = generate_canvas_grids_by_image_path(image_info.path.as_str(), fill_options, pick_strategy)
         .map_err(|e| ApiError::BizError("IMAGE_NOT_FOUND".to_string(), e.to_string()))?;
 
     let mut mosaic_grids = Vec::with_capacity(grids.len());
@@ -188,6 +187,5 @@ fn get_image_by_id(image_id: String, app_state: Arc<AppState>) -> Result<ImageIn
             format!("image not found with id: {}", image_id).to_string()
         ))
     }
-
 
 }

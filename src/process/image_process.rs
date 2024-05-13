@@ -7,7 +7,7 @@ use image::{ImageBuffer, Rgba};
 use anyhow::Result;
 use imageproc::drawing::{draw_hollow_polygon_mut, draw_polygon_mut};
 
-use crate::{ImageInfo, Point};
+use crate::{Grid, GridShape, ImageInfo, Point};
 // use crate::TrianglePoints;
 
 
@@ -48,6 +48,62 @@ pub fn load_all_image_info(logo_image_dir_path: &str) -> Result<DashMap<String, 
 }
 
 
+/// 画带有格子的画布
+pub fn draw_canvas_with_grids(
+    canvas_width: u32, 
+    canvas_height: u32,
+    canvas_color: Rgba<u8>,
+    grids: Vec<Grid>,
+    grid_border_color: Rgba<u8>,
+    grid_fill_color: Rgba<u8>,
+    path: PathBuf,
+) -> Result<()> {
+    // 创建一个新的空白画布
+    let mut img = ImageBuffer::from_pixel(canvas_width,  canvas_height, canvas_color);
+    
+    // 填充格子
+    for grid in &grids {
+        let mut points: Vec<imageproc::point::Point<i32>> = Vec::with_capacity(grid.points.len());
+        for point in &grid.points {
+            points.push(imageproc::point::Point {
+                x: point.x as i32,
+                y: point.y as i32,
+            });
+        }
+
+        println!("正在绘制格子：{:?}", grid);
+        match grid.shape {
+            GridShape::Triangle => {
+                draw_polygon_mut(&mut img, &points, grid_fill_color);
+            },
+        }
+    }
+
+    // 画格子的边框
+    for grid in &grids  {
+        let mut points: Vec<imageproc::point::Point<f32>> = Vec::with_capacity(grid.points.len());
+        for point in &grid.points {
+            points.push(imageproc::point::Point {
+                x: point.x as f32,
+                y: point.y as f32,
+            });
+        }
+        draw_hollow_polygon_mut(&mut img, &points, grid_border_color);
+    }
+
+    // 保存图像
+    img.save(path)?;
+    
+    Ok(())
+
+
+}
+
+    // 设置矩形画布的尺寸,背景色
+    // "#373737"
+    // "#9099A2"
+    // "#984B43"
+    // "#EAC67A"
 
 /// 画初始画布
 pub fn draw_empty_canvas(
