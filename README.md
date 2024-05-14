@@ -11,7 +11,7 @@
 
 ### 安装 VSCode 插件
 
-- crates: Rust 包管理
+- rust: Rust 官方插件集（里面包含了rust-analyzer, crates, Rust Syntax）
 - Even Better TOML: TOML 文件支持
 - Better Comments: 优化注释显示
 - Error Lens: 错误提示优化
