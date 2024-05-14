@@ -1,34 +1,21 @@
 mod process;
 mod web;
+mod repo;
+mod utils;
 
 use anyhow::Result;
 use image::Rgba;
 use serde::{Deserialize, Serialize};
-use std::{collections::HashMap, str::FromStr};
+use std::str::FromStr;
 pub use process::*;
 pub use web::*;
+pub use repo::*;
 
-pub const GRID_EXT_AVG_COLOR: &'static str = "avg_color";
-pub const GRID_EXT_COLOR_DISTANCE: &'static str = "color_distance";
-pub const GRID_EXT_REMAINING_AREA_RATIO: &'static str = "remaining_area_ratio";
-pub const GRID_EXT_REMOVED_BG_COLOR: &'static str = "eliminated_bg_color";
-pub const GRID_EXT_SELECTED: &'static str = "selected";
-
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub enum Value {
-    Bool(bool),
-    Int(i32),
-    String(String),
-    Rgb((u8, u8, u8)),
-    U32(u32),
-    U32Array(Vec<u32>),
-    F32(f32),
-    F32Array(Vec<f32>),
-}
 
 
 #[derive(Debug, Clone, Copy, Serialize, Deserialize)]
 pub enum GridShape {
+    #[serde(rename = "triangle")]
     Triangle,
     // Rectangle(u32, u32),
 }
@@ -39,16 +26,36 @@ impl From<GridShape> for String {
             GridShape::Triangle => "triangle".to_string(),
         }
     }
-
 }
 
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct Grid {
-    seq: String,
-    shape: GridShape,
-    points: Vec<Point>,
-    ext: HashMap<String, Value>,
+    pub seq: String,
+    pub shape: GridShape,
+    pub points: Vec<Point>,
+    pub ext: GridExt,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct GridExt {
+    pub avg_color: Option<(u8, u8, u8)>,
+    pub color_distance: Option<f32>,
+    pub remaining_area_ratio: Option<f32>,
+    pub selected: Option<bool>,
+}
+
+impl Default for GridExt {
+    fn default() -> Self {
+        Self {
+            avg_color: None,
+            color_distance: None,
+            remaining_area_ratio: None,
+            selected: None,
+        }
+    }
 }
 
 
@@ -71,7 +78,7 @@ pub struct CanvasGridGenerateParams {
     pub canvas_width: u32,
     pub canvas_height: u32,
     pub grid_fill_options: GridFillOptions,
-    pub grid_pick_strategy: GridPickStrategy,
+    pub grid_pick_strategy: GridPickCmd,
 }
 
 
@@ -86,12 +93,19 @@ pub enum GridFillOptions {
 }
 
 #[derive(Debug, Clone, Copy, Serialize, Deserialize)]
-pub enum GridPickStrategy{
-
+pub enum GridPickCmd{
     // 区域平均色值比较
     AvgColorCompare(AvgColorCompareParam),
     // 剔除背景色后，
     EliminateBgColor(EliminateBgColorParam),
+}
+
+#[derive(Debug, Clone, Copy, Serialize, Deserialize)]
+pub enum GridPickStrategy{
+    // 计算格子内像素点的平均色值，与目标色值比较差值
+    AvgColorCompare,
+    // 剔除背景色，根据剩余像素点的占比来选择格子
+    EliminateBgColor,
 }
 
 
@@ -115,7 +129,33 @@ pub struct EliminateBgColorParam{
 
 
 
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct ImageInfo {
+    pub id: String,
+    pub width: u32,
+    pub height: u32,
+    pub name: String,
+    pub path: String,
+    pub bg_color: (u8, u8, u8),
+}
+
+
 pub struct Color(pub Rgba<u8>);
+
+impl Color {
+    pub fn from_rgb((r,g, b): (u8,u8,u8)) -> Self {
+        Color(image::Rgba([r, g, b, 255]))
+    }
+
+    fn to_string(&self) -> String {
+        format!("#{:02X}{:02X}{:02X}", self.0[0], self.0[1], self.0[2])
+    }
+
+    fn to_rgb(&self) -> (u8, u8, u8) {
+        (self.0[0], self.0[1], self.0[2])
+    }
+
+}
 
 impl FromStr for Color{
     type Err = anyhow::Error;
@@ -134,4 +174,5 @@ impl FromStr for Color{
         // 假设透明度为255（完全不透明），可以根据需要调整
         Ok(Color(image::Rgba([r, g, b, 255])))
     }
+    
 }

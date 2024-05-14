@@ -1,7 +1,6 @@
 use anyhow::Result;
 use axum::{ http::StatusCode, routing::get_service};
-use dashmap::DashMap;
-use logo_process::{api_routes, AppState, ImageInfo};
+use logo_process::{api_routes, ActivityMemoryRepo, AppState, ImageDO,  ImageMemoryRepo, ImageRepo};
 use tower_http::services::ServeDir;
 use std::{net::SocketAddr, sync::Arc};
 use tracing::{debug, info};
@@ -17,13 +16,18 @@ pub async fn main() -> Result<()> {
 
     let logo_image_dir_path= "images";
     // 加载logo图片
-    let image_map =  mock_all_images();
+    let image_repo =  ImageMemoryRepo::new();
+    init_builtin_images(&image_repo)?;
+
+    let activity_repo =  ActivityMemoryRepo::new();
 
     let app_state = Arc::new(AppState { 
         logo_image_dir_path,
         static_path: "./logo-mosaic-web/dist",
-        image_map,
+        image_repo,
+        activity_repo,
      });
+     
 
     let static_service = get_service(
         ServeDir::new(app_state.static_path),)
@@ -48,15 +52,14 @@ pub async fn main() -> Result<()> {
 
 
 
-fn mock_all_images() -> DashMap<String, ImageInfo>{
-    let image_map = dashmap::DashMap::new();
-    image_map.insert("1".to_string(), ImageInfo{
+fn init_builtin_images(image_repo: &ImageMemoryRepo) -> Result<()> {
+    image_repo.insert_image(ImageDO{
         id: "1".to_string(),
         width: 968,
         height: 698,
         name: "logo1.png".to_string(),
         path: "images/logo1.png".to_string(),
         bg_color: (255, 255, 255)
-    },);
-    image_map
+    })?;
+    Ok(())
 }

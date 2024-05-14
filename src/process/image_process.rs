@@ -1,14 +1,11 @@
 use std::path::{Path, PathBuf};
 
 use dashmap::DashMap;
-// use image::RgbImage;
-// use imageproc::point::Point;
 use image::{ImageBuffer, Rgba};
 use anyhow::Result;
 use imageproc::drawing::{draw_hollow_polygon_mut, draw_polygon_mut};
 
 use crate::{Grid, GridShape, ImageInfo, Point};
-// use crate::TrianglePoints;
 
 
 /// 从指定目录加载所有图片（png, jpeg）
@@ -71,10 +68,14 @@ pub fn draw_canvas_with_grids(
             });
         }
 
-        println!("正在绘制格子：{:?}", grid);
+        // println!("正在绘制格子：{:?}", grid);
         match grid.shape {
             GridShape::Triangle => {
-                draw_polygon_mut(&mut img, &points, grid_fill_color);
+                if let Some(c) = grid.ext.avg_color {
+                    draw_polygon_mut(&mut img, &points, Rgba([c.0, c.1, c.2, 255]));
+                } else {
+                    draw_polygon_mut(&mut img, &points, grid_fill_color);
+                }
             },
         }
     }

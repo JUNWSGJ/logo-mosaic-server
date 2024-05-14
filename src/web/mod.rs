@@ -2,14 +2,14 @@ mod image;
 mod activity;
 
 use std::sync::Arc;
-use axum::{http::StatusCode, response::{IntoResponse, Response}, Router};
+use axum::{http::StatusCode, response::{IntoResponse, Response}, Json, Router};
 use dashmap::DashMap;
 use serde::Serialize;
 use thiserror::Error;
 
 use image::image_routes;
 use activity::activity_routes;
-use crate::ImageInfo;
+use crate::{repo::ActivityMemoryRepo, ImageInfo, ImageMemoryRepo};
 
 #[derive(Error, Debug)]
 pub enum ApiError{
@@ -23,9 +23,11 @@ pub enum ApiError{
 
 
 #[derive(Debug, Clone,Serialize)]
+#[serde(rename_all = "camelCase")]
 pub struct ApiResponse<T> {
-    pub code: String,
-    pub message: String,
+    pub success: bool,
+    pub err_code: Option<String>,
+    pub err_message: Option<String>,
     pub data: T,
 }
 
@@ -41,11 +43,13 @@ impl IntoResponse for ApiError {
         };
 
         let api_response = ApiResponse {
-            code,
-            message,
+            success: false,
+            err_code: Some(code),
+            err_message: Some(message),
             data: (),
         };
-        (status, serde_json::to_string(&api_response).unwrap_or_default()).into_response()
+        let json_response = Json(api_response);
+        (status, json_response.into_response()).into_response()
     }
 }
 
@@ -53,8 +57,9 @@ impl <T> ApiResponse<T>
 where T: Serialize{
     pub fn ok(data: T) -> Self {
         Self {
-            code: "SUCCESS".to_string(),
-            message: "success".to_string(),
+            success: true,
+            err_code: None,
+            err_message: None,
             data,
         }
     }
@@ -65,22 +70,23 @@ where
     T: Serialize, // 假设数据部分需要序列化，这里使用serde的Serialize trait
 {
     fn into_response(self) -> Response {
-        let body = serde_json::to_string(&self).expect("ApiResponse serialization failed");
-        (StatusCode::OK, body).into_response()
+        let json_response = Json(self);
+        (StatusCode::OK, json_response.into_response()).into_response()
     }
 }
 
 
 
 
-#[derive(Debug)]
 pub struct AppState {
     /// logo图片存储路径
     pub logo_image_dir_path: &'static str,
     /// 前端静态资源路径
     pub static_path: &'static str,
     /// logo图片集
-    pub image_map: DashMap<String, ImageInfo>,
+    pub image_repo: ImageMemoryRepo,
+    /// 活动repo
+    pub activity_repo: ActivityMemoryRepo,
     
 }
 

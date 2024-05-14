@@ -1,0 +1,26 @@
+### 获取活动详情
+GET http://localhost:8002/api/activity/detail?id=123
+
+
+###  创建活动
+POST http://localhost:8002/api/activity/create
+Content-Type: application/json
+
+{
+    
+}
+
+
+
+
+### 活动签到
+POST http://localhost:8002/api/activity/signIn
+Content-Type: application/json
+
+{
+    "activityId": 123,
+    "seq": "456"
+}
+
+### 重置活动格子的标记
+GET http://localhost:8002/api/activity/reset?id=123

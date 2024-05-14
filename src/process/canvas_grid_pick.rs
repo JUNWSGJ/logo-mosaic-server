@@ -1,9 +1,7 @@
 use anyhow::Result;
 use image::RgbaImage;
-use tracing::{debug, error};
-use tracing_subscriber::reload::Error;
-
-use crate::{Grid, GridShape, Point, Value, GRID_EXT_AVG_COLOR, GRID_EXT_REMAINING_AREA_RATIO};
+use tracing::error;
+use crate::{Grid, GridShape, Point};
 
 
 
@@ -20,8 +18,6 @@ pub fn calc_avg_color_of_grid(img: &RgbaImage,grid: &Grid) -> Result<(u8, u8, u8
             // 计算平均色值
             let color = calc_average_color_in_triangle(img, triangle);
             Ok(color)
-            // grid.ext.insert(GRID_EXT_AVG_COLOR.into(), Value::Rgb(color));
-            // debug!("fill_avg_color, grid_seq: {:?}, avg_color: {:?}", grid.seq, color);
         },
     }
 }
