@@ -5,43 +5,9 @@ use crate::{Grid, GridShape, Point};
 
 
 
-pub fn calc_avg_color_of_grid(img: &RgbaImage,grid: &Grid) -> Result<(u8, u8, u8)>{
-    match grid.shape {
-        GridShape::Triangle => {
-            let points = &grid.points;
-            assert_eq!(points.len(), 3, "Each polygon should have 3 points.");
-            let triangle:[(u32, u32); 3] = [
-                (points[0].x, points[0].y),
-                (points[1].x, points[1].y),
-                (points[2].x, points[2].y),
-            ];
-            // 计算平均色值
-            let color = calc_average_color_in_triangle(img, triangle);
-            Ok(color)
-        },
-    }
-}
 
 
-pub fn calc_remaining_area_ratio_in_grid(
-    img: &RgbaImage, 
-    grid: &Grid,
-    bg_color: (u8, u8, u8)) -> Result<f32>{
-    match grid.shape {
-            GridShape::Triangle => {
-                let points = &grid.points;
-                assert_eq!(points.len(), 3, "Each triangle should have 3 points.");
-                let triangle:[(u32, u32); 3] = [
-                    (points[0].x, points[0].y),
-                    (points[1].x, points[1].y),
-                    (points[2].x, points[2].y),
-                ];
-                // 计算剔除背景色后的剩余区域占比
-                calc_remaining_area_ratio_in_triangle(img, bg_color, triangle)
-            },
-    }
-    
-}
+
 
 
 /// 计算三角形区域的平均色值

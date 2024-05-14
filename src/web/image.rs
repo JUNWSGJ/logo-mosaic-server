@@ -166,19 +166,19 @@ async fn convert_to_mosaic_grids(
     
     let pick_strategy = match req.grid_pick_strategy {
         GridPickStrategy::AvgColorCompare => {
-            let color = req.grid_pick_options.target_color.as_ref().unwrap();
+            let color_str = req.grid_pick_options.target_color.as_ref().unwrap().as_str();
             let range = req.grid_pick_options.color_distance_range.unwrap();
             let min_distance = range.0 as f32  / 100 as f32;
             let max_distance = range.1 as f32 / 100 as f32;
             GridPickCmd::AvgColorCompare(AvgColorCompareParam{
-                color: Color::from_str(color).unwrap().to_rgb(),
+                color: Color::from_str(color_str).unwrap(),
                 min_distance: min_distance,
                 max_distance: max_distance,
             })
         },
         GridPickStrategy::EliminateBgColor => {
             GridPickCmd::EliminateBgColor(EliminateBgColorParam{
-                color: (255, 255, 255),
+                color: "#ffffffff".into(),
                 min_remaining_ratio: req.grid_pick_options.remaining_ratio.unwrap_or(0.1),
             })
         }
@@ -200,11 +200,8 @@ async fn convert_to_mosaic_grids(
             selected = v;
         }
 
-        let avg_color = if let Some(c) = grid.ext.avg_color {
-            Some(Color::from_rgb(c).to_string())
-        } else {
-            None
-        };
+        let avg_color = grid.ext.avg_color;
+
         let mosaic_grid = MosaicGrid{
             seq: grid.seq.clone(),
             points: grid.points.clone(),
@@ -212,7 +209,7 @@ async fn convert_to_mosaic_grids(
             selected,
             color: req.grid_selected_color.clone(),
             ext: MosaicGridExt{
-                avg_color: avg_color,
+                avg_color: avg_color.map(|c| c.to_rgba_string()),
                 color_distance: grid.ext.color_distance,
                 remaining_area_ratio: grid.ext.remaining_area_ratio,
             }

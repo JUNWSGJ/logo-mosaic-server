@@ -1,20 +1,15 @@
-mod canvas_generate;
+mod canvas;
 mod canvas_grid_pick;
-mod image_process;
+mod image_draw;
 
-
-
+pub use image_draw::draw_canvas_with_grids;
+pub use canvas::generate_enmty_canvas_grids;
 
 use image::{ImageBuffer, Rgba, RgbaImage};
 use anyhow::Result;
-use serde::{Deserialize, Serialize};
 use tracing::debug;
-use crate::{Grid, GridFillOptions, GridPickCmd};
-
-pub use image_process::{draw_empty_canvas, load_all_image_info, draw_canvas_with_grids};
-pub use canvas_generate::{get_all_triangles_of_canvas, get_canvas_grids_filled_with_trianles};
-use self::canvas_grid_pick::{calc_avg_color_of_grid, calc_remaining_area_ratio_in_grid, calculate_color_diff};
-
+use crate::{ calc_color_distance, Grid, GridFillOptions, GridPickCmd};
+use canvas::{calc_avg_color_of_grid, calc_remaining_area_ratio_in_grid};
 
 
 
@@ -58,16 +53,6 @@ pub fn generate_canvas_grids_from_logo_image(
 
 
 
-/// 生成空画布信息
-fn generate_enmty_canvas_grids(canvas_width: u32, canvas_height: u32, options: GridFillOptions) -> Result<Vec<Grid>> {
-    match options {
-        GridFillOptions::Triangle(w, h) => {
-            get_canvas_grids_filled_with_trianles(canvas_width, canvas_height, w, h)
-        }
-    }
-}
-
-
 fn pick_grids_by_strategy(
     img: &RgbaImage, 
     grids: &mut Vec<Grid>, 
@@ -80,7 +65,7 @@ fn pick_grids_by_strategy(
                 let avg_color = calc_avg_color_of_grid(img, grid)?;
                 grid.ext.avg_color = Some(avg_color);
                 // 计算差值
-                let distance = calculate_color_diff(avg_color, param.color);
+                let distance = calc_color_distance(avg_color.to_rgb(), param.color.to_rgb());
                 grid.ext.color_distance = Some(distance);
                 let selected = distance >= param.min_distance && distance <= param.max_distance;
                 grid.ext.selected = Some(selected);
