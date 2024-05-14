@@ -2,8 +2,7 @@ use std::path::PathBuf;
 use image::{ImageBuffer, Rgba};
 use anyhow::Result;
 use imageproc::drawing::{draw_hollow_polygon_mut, draw_polygon_mut};
-
-use crate::{Grid, Point};
+use crate::Grid;
 
 
 /// 画带有格子的画布

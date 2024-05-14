@@ -4,7 +4,7 @@ mod repo;
 mod utils;
 
 use anyhow::Result;
-use image::{Rgb, Rgba};
+use image::Rgba;
 use serde::{Deserialize, Serialize};
 use std::str::FromStr;
 pub use process::*;
@@ -152,11 +152,11 @@ pub struct Color((u8, u8, u8, u8));
 
 impl Color {
     pub fn from_rgb((r,g, b): (u8,u8,u8)) -> Self {
-        Color((r, g, b, 0))
+        Color((r, g, b, 255))
     }
 
     pub fn from_rgba((r,g, b, a): (u8,u8,u8,u8)) -> Self {
-        Color((r, g, b, 0))
+        Color((r, g, b, a))
     }
 
     pub fn to_string(&self) -> String {
@@ -187,7 +187,7 @@ impl FromStr for Color{
                 u8::from_str_radix(&hex[1..3], 16).unwrap(),
                 u8::from_str_radix(&hex[3..5], 16).unwrap(),
                 u8::from_str_radix(&hex[5..7], 16).unwrap(),
-                0,
+                255,
             )
         } else if hex.len() == 9 {
             (
@@ -196,12 +196,11 @@ impl FromStr for Color{
                 u8::from_str_radix(&hex[5..7], 16).unwrap(),
                 u8::from_str_radix(&hex[7..9], 16).unwrap(),
             )
-        }
-         else {
+        } else {
             panic!("Invalid hex color length")
         };
         
-        Ok(Color((r, g, b, 255)))
+        Ok(Color((r, g, b, a)))
     }
     
 }

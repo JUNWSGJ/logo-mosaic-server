@@ -1,0 +1,13 @@
+
+
+
+### 生成画布数据
+POST http://localhost:8002/api/canvas/generate_canvas_grids
+Content-Type: application/json
+
+{   
+    "canvasWidth": 1000,
+    "canvasHeight": 800,
+    "gridShape": "triangle",
+    "gridSize": [50, 40]
+}

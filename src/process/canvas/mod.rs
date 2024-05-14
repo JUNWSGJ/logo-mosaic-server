@@ -8,7 +8,7 @@ use self::triangle::{
     calc_remaining_area_ratio_in_triangle, 
     genarate_canvas_grids_filled_with_trianles
 };
-use self::reactangle::{calc_average_color_in_rectangle, genarate_canvas_grids_filled_with_rectanles};
+use self::reactangle::{calc_average_color_in_rectangle, calc_remaining_area_ratio_in_rectangle, genarate_canvas_grids_filled_with_rectanles};
 use crate::{Color, Grid, GridFillOptions, GridShape};
 
 /// 生成空画布格子信息(格子形状支持：三角形，矩形)
@@ -56,7 +56,8 @@ pub fn calc_remaining_area_ratio_in_grid(
                 calc_remaining_area_ratio_in_triangle(img, bg_color, triangle)
             },
             GridShape::Rectangle => {
-                todo!()
+                let points = &grid.points;
+                calc_remaining_area_ratio_in_rectangle(img, bg_color, points)
             }
 
     }

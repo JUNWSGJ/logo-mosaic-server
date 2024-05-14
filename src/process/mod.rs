@@ -1,5 +1,4 @@
 mod canvas;
-mod canvas_grid_pick;
 mod image_draw;
 
 pub use image_draw::draw_canvas_with_grids;
@@ -10,9 +9,6 @@ use anyhow::Result;
 use tracing::debug;
 use crate::{ calc_color_distance, Grid, GridFillOptions, GridPickCmd};
 use canvas::{calc_avg_color_of_grid, calc_remaining_area_ratio_in_grid};
-
-
-
 
 
 

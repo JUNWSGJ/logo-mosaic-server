@@ -1,15 +1,17 @@
 mod image;
 mod activity;
+mod canvas;
+
 
 use std::sync::Arc;
 use axum::{http::StatusCode, response::{IntoResponse, Response}, Json, Router};
-use dashmap::DashMap;
 use serde::Serialize;
 use thiserror::Error;
 
 use image::image_routes;
 use activity::activity_routes;
-use crate::{repo::ActivityMemoryRepo, ImageInfo, ImageMemoryRepo};
+use canvas::canvas_routes;
+use crate::{repo::ActivityMemoryRepo, ImageMemoryRepo};
 
 #[derive(Error, Debug)]
 pub enum ApiError{
@@ -34,11 +36,11 @@ pub struct ApiResponse<T> {
 impl IntoResponse for ApiError {
     fn into_response(self) -> Response {
         let (status, code, message) = match self {
-            ApiError::InternalServerError => (StatusCode::INTERNAL_SERVER_ERROR, "INTERNAL_SERVER_ERRROR".to_owned(), "Internal Server Error".to_owned()),
+            ApiError::InternalServerError => (StatusCode::INTERNAL_SERVER_ERROR, "INTERNAL_SERVER_ERRROR".into(), "Internal Server Error".into()),
             // 为其他错误类型匹配相应的HTTP状态码和消息
             ApiError::BizError(code, message) => (StatusCode::OK, code, message),
             ApiError::InvalidParameter(field, message) => (
-                StatusCode::BAD_REQUEST, "INVALID_PARAMETER".to_string(), format!("参数[{}]无效：{}", field, message)
+                StatusCode::BAD_REQUEST, "INVALID_PARAMETER".into(), format!("参数[{}]无效：{}", field, message)
             ),
         };
 
@@ -93,6 +95,7 @@ pub struct AppState {
 
 pub fn api_routes() -> Router<Arc<AppState>> {
     Router::new()
+        .nest("/canvas", canvas_routes())
         .nest("/image", image_routes())
         .nest("/activity", activity_routes())
 }
