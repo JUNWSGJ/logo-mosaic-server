@@ -2,7 +2,6 @@ use std::sync::Arc;
 use anyhow::Result;
 use axum::{extract::State, Json};
 use serde::{Deserialize, Serialize};
-use uuid::Uuid;
 use crate::{ActivityDO, ActivityGridDO, ActivityRepo, ApiError, ApiResponse, AppState, GridShape, Point};
 
 
@@ -17,6 +16,7 @@ pub struct ActivityCreateReq {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct ActivityGrid {
     pub seq: String,
     pub points: Vec<Point>,
@@ -31,8 +31,8 @@ pub struct ActivityGrid {
 
 pub async fn activity_create_handler(
     State(app_state): State<Arc<AppState>>,
-    Json(req): Json<ActivityCreateReq>) -> Result<ApiResponse<()>, ApiError> {
-    let activity_id = Uuid::new_v4().to_string();
+    Json(req): Json<ActivityCreateReq>) -> Result<ApiResponse<String>, ApiError> {
+    let activity_id = "ACTIVITY_001".to_string();
     app_state.activity_repo.insert_activity(ActivityDO{
         id: activity_id.clone(),
         name: req.name.clone(),
@@ -48,5 +48,5 @@ pub async fn activity_create_handler(
             unmarked_color: grid.unmarked_color.clone(),
         }).collect(),
     })?;
-    Ok(ApiResponse::ok(()))
+    Ok(ApiResponse::ok(activity_id))
 }
